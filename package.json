@@ -25,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/toastify-js": "^1.12.3",
     "babel-jest": "^29.7.0",
     "daisyui": "^4.12.10",
     "eslint": "^8",

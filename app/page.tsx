@@ -133,7 +133,7 @@ export default function Home() {
           </thead>
           <tbody>
             {filteredItems.map((item, index) => (
-              <ProductCard key={index} item={item} addToCart = {addToCart}/>
+              <ProductCard key={index} index={index} item={item} addToCart = {addToCart}/>
             ))}
           </tbody>
         </table>

@@ -8,7 +8,7 @@ interface ProductCardProps {
     price: number;
   };
   index: number;
-  addToCart: (item: 'typeof item') => void;
+  addToCart: (item: { name: string; description: string; price: number }) => void; 
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({item, addToCart }) => {
