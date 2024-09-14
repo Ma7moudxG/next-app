@@ -1,101 +1,171 @@
-import Image from "next/image";
+'use client'
+import { useState, useEffect } from 'react';
+import { FaArrowDown, FaArrowUp, FaShoppingCart, FaCartPlus, FaTrash    } from "react-icons/fa";
+import Toastify from 'toastify-js';
+
+interface Item {
+  name: string;
+  description: string;
+  price: number;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [items, setItems] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [currentMaxPrice, setCurrentMaxPrice] = useState<number>(100); // Added state to track the current range slider value
+  const [cart, setCart] = useState<Item[]>([]);
+  
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  const addToCart = (item: Item) => {
+    setCart([...cart, item]);
+    Toastify({
+      text: "Added to Cart",
+      className: "info",
+      style: {
+        background: "#00b09b",
+        color: "#ffffff",
+        padding: "10px"
+      }
+    }).showToast();
+  };
+
+  const removeFromCart = (indexToRemove: number) => {
+    setCart(cart.filter((_, index) => index !== indexToRemove));
+  };
+
+  useEffect(() => {
+    fetch('/api/items')
+      .then((res) => res.json())
+      .then((data) => {
+        setItems(data);
+        setFilteredItems(data); // Set the filteredItems with the initial fetched data
+      });
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    filterItems(term, sortOrder, priceRange);
+  };
+
+  const handleSort = (order: 'asc' | 'desc') => {
+    setSortOrder(order);
+    filterItems(searchTerm, order, priceRange);
+  };
+
+  const handlePriceFilter = (min: number, max: number) => {
+    setPriceRange([min, max]);
+    setCurrentMaxPrice(max); // Update the current value of the range slider
+    filterItems(searchTerm, sortOrder, [min, max]);
+  };
+
+  const filterItems = (searchTerm: string, sortOrder: 'asc' | 'desc' | null, priceRange: [number, number]) => {
+    let filtered = items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchTerm) &&
+        item.price >= priceRange[0] &&
+        item.price <= priceRange[1]
+    );
+
+    if (sortOrder === 'asc') {
+      filtered = filtered.sort((a, b) => a.price - b.price);
+    } else if (sortOrder === 'desc') {
+      filtered = filtered.sort((a, b) => b.price - a.price);
+    }
+
+    setFilteredItems(filtered);
+  };
+
+  return (
+    <>
+      <div className="drawer">
+        <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+        <div className="drawer-content">
+          <div className='flex justify-between items-center'>
+            <h1 className='text-3xl p-5'>Fruits Items</h1>
+            <label htmlFor="my-drawer" className=" drawer-button cursor-pointer text-slate-500 hover:text-slate-700">
+              <FaShoppingCart className='text-2xl'/> 
+            </label>
+          </div>
+          <input
+            type="text"
+            placeholder="Search items"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="rounded-xl border p-2 mb-4 w-full"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <div className="flex mb-4 justify-between max-w-[800px] sm:flex">
+            <div className='flex gap-3 sm:text-base text-xs align'>
+              <h3 className='hidden sm:block'>Sort by Price</h3>
+              <button onClick={() => handleSort('desc')} className='m-0'><FaArrowDown /></button>
+              <button onClick={() => handleSort('asc')} className='m-0'><FaArrowUp /></button>
+            </div>
+            <div className='flex-col'>
+              <div className='flex gap-3'>
+                0
+                <input 
+                  type='range' 
+                  min='0' 
+                  max='100'
+                  value={currentMaxPrice} // Bind the value to the current state
+                  onChange={(e) => handlePriceFilter(0, Number(e.target.value))}
+                />
+                100
+              </div>
+              <div className='text-center'>
+                {currentMaxPrice}
+              </div>
+            </div>
+          </div>
+        <table className='table table-bordered'>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredItems.map((item, index) => (
+              <tr key={index} className='hover:bg-slate-100'>
+                <td>{item.name}</td>
+                <td>{item.description}</td>
+                <td>${item.price}</td>
+                <td>
+                <button
+                  onClick={() => addToCart(item)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white p-2 text-xs rounded text-center"
+                >
+                  <FaCartPlus />
+                </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="drawer-side">
+        <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+        <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+          {!cart.length && <h3 className='px-4 py-4 flex items-center justify-between'>Cart is still empty</h3> }
+          {cart.map((item, index) => (
+            <div key={index} className='px-4 py-4 flex items-center justify-between'>
+              <p>{item.name} - ${item.price}</p>
+              <button
+                onClick={() => removeFromCart(index)} // Pass the index here
+                className="bg-red-500 hover:bg-red-700 text-white p-2 text-xs rounded text-center"
+              >
+                <FaTrash />
+              </button>  
+            </div>
+          ))}
+        </ul>
+      </div>
+      </div>
+    </>
   );
 }

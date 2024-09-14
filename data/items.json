@@ -1,0 +1,8 @@
+[
+    { "name": "Banana", "description": "Description about yellow Banana", "price": 20 },
+    { "name": "Red Apple", "description": "Description about Red Apple", "price": 35 },
+    { "name": "Green Apple", "description": "Description about green Apple", "price": 25 },
+    { "name": "Peach", "description": "Description about orange Peach", "price": 75 },
+    { "name": "Mango", "description": "Description about yellow Mango", "price": 55 }
+  ]
+  
