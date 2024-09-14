@@ -1,0 +1,62 @@
+Test Plan for Shopping Cart Application
+
+Features
+===========
+1- Search functionality
+2- Sort items by price Ascending
+3- Sort items by price Descending
+4- Add item to cart
+
+=================================================================================================================
+
+Test Cases
+===========
+Test Case 1: Search Functionality
+
+    Objective: Ensure items can be searched by name.
+    Steps:
+        Enter a keyword into the search input.
+        Observe the filtered results.
+    Expected Result: Results should only display items matching the search term.
+
+----------------------
+
+Test Case 2: Sort Items by Price Ascending
+
+    Objective: Verify sorting Ascendingly works.
+    Steps:
+        Click the "Sort by Price Ascending" button.
+        Observe the item order.
+    Expected Result: Items should reorder based on price.
+
+----------------------
+
+Test Case 3: Sort Items by Price Descending
+
+    Objective: Verify sorting Descindingly works.
+    Steps:
+        Click the "Sort by Price Descending" button.
+        Observe the item order.
+    Expected Result: Items should reorder based on price.
+
+----------------------
+
+Test Case 4: Add Item to Cart
+
+    Objective: Verify that an item can be added to the cart.
+    Steps:
+        Open the application.
+        Click the "Add to Cart" button for an item.
+        Check the cart.
+    Expected Result: Item appears in the cart.
+
+==============================================================================
+
+Results: 
+Test Case 1: Search Functionality
+Expected Result: Correct items are filtered
+Actual Result: As Expected 
+Passed
+
+
+

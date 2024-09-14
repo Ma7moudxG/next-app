@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import { FaArrowDown, FaArrowUp, FaShoppingCart, FaCartPlus, FaTrash    } from "react-icons/fa";
 import Toastify from 'toastify-js';
+import ProductCard from './components/ProductCard';
+import CartItem from './components/CartItem';
+import React from 'react';
 
 interface Item {
   name: string;
@@ -41,7 +44,7 @@ export default function Home() {
       .then((res) => res.json())
       .then((data) => {
         setItems(data);
-        setFilteredItems(data); // Set the filteredItems with the initial fetched data
+        setFilteredItems(data); 
       });
   }, []);
 
@@ -58,7 +61,7 @@ export default function Home() {
 
   const handlePriceFilter = (min: number, max: number) => {
     setPriceRange([min, max]);
-    setCurrentMaxPrice(max); // Update the current value of the range slider
+    setCurrentMaxPrice(max); 
     filterItems(searchTerm, sortOrder, [min, max]);
   };
 
@@ -100,7 +103,7 @@ export default function Home() {
           <div className="flex mb-4 justify-between max-w-[800px] sm:flex">
             <div className='flex gap-3 sm:text-base text-xs align'>
               <h3 className='hidden sm:block'>Sort by Price</h3>
-              <button onClick={() => handleSort('desc')} className='m-0'><FaArrowDown /></button>
+              <button data-testid="desc" onClick={() => handleSort('desc')} className='m-0'><FaArrowDown /></button>
               <button onClick={() => handleSort('asc')} className='m-0'><FaArrowUp /></button>
             </div>
             <div className='flex-col'>
@@ -130,19 +133,7 @@ export default function Home() {
           </thead>
           <tbody>
             {filteredItems.map((item, index) => (
-              <tr key={index} className='hover:bg-slate-100'>
-                <td>{item.name}</td>
-                <td>{item.description}</td>
-                <td>${item.price}</td>
-                <td>
-                <button
-                  onClick={() => addToCart(item)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white p-2 text-xs rounded text-center"
-                >
-                  <FaCartPlus />
-                </button>
-                </td>
-              </tr>
+              <ProductCard key={index} item={item} addToCart = {addToCart}/>
             ))}
           </tbody>
         </table>
@@ -153,15 +144,7 @@ export default function Home() {
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
           {!cart.length && <h3 className='px-4 py-4 flex items-center justify-between'>Cart is still empty</h3> }
           {cart.map((item, index) => (
-            <div key={index} className='px-4 py-4 flex items-center justify-between'>
-              <p>{item.name} - ${item.price}</p>
-              <button
-                onClick={() => removeFromCart(index)} // Pass the index here
-                className="bg-red-500 hover:bg-red-700 text-white p-2 text-xs rounded text-center"
-              >
-                <FaTrash />
-              </button>  
-            </div>
+            <CartItem key={index} item={item} index={index} removeFromCart = {removeFromCart}/>
           ))}
         </ul>
       </div>
