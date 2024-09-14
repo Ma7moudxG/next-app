@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { FaArrowDown, FaArrowUp, FaShoppingCart, FaCartPlus, FaTrash    } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaShoppingCart } from "react-icons/fa";
 import Toastify from 'toastify-js';
 import ProductCard from './components/ProductCard';
 import CartItem from './components/CartItem';
